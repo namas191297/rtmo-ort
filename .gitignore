@@ -25,6 +25,7 @@ api_vis.jpg
 models/*
 !models/
 !models/.gitkeep
+backup_release_assets_*.tar.gz
 
 # Local release bundles (upload to Releases, not git)
 release_assets/
