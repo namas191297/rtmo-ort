@@ -23,6 +23,7 @@ api_vis.jpg
 # Model blobs (host on GitHub Releases)
 *.onnx
 models/*
+!models/
 !models/.gitkeep
 
 # Local release bundles (upload to Releases, not git)
