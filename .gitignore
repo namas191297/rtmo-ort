@@ -32,3 +32,4 @@ release_assets/
 
 tests/
 scripts/
+onnx_models/
