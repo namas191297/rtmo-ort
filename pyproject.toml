@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rtmo-ort"
+version = "0.1.0"
+description = "RTMO pose estimation with pure ONNX Runtime (tiny class + CLI)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Your Name" }]
+keywords = ["RTMO", "pose", "mmpose", "onnxruntime", "keypoints", "realtime"]
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+  "numpy",
+  "opencv-python"
+]
+
+[project.optional-dependencies]
+cpu = ["onnxruntime"]
+gpu = ["onnxruntime-gpu"]
+
+[project.scripts]
+rtmo-webcam = "rtmo_ort.cli:webcam_main"
+rtmo-image  = "rtmo_ort.cli:image_main"
+rtmo-video  = "rtmo_ort.cli:video_main"
+
+[project.urls]
+Homepage = "https://github.com/<you>/rtmo-ort"
+Issues = "https://github.com/<you>/rtmo-ort/issues"
