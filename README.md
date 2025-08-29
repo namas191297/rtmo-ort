@@ -49,7 +49,7 @@ You need the RTMO **.onnx** files on disk. The **recommended** way is to run the
 
 ### Option A — Recommended script (from repo root)
 ```bash
-./get_models.sh
+bash get_models.sh
 ```
 This creates a layout like:
 ```
