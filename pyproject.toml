@@ -2,6 +2,11 @@
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build]
+include = ["rtmo_ort/**", "README.md", "LICENSE"]
+exclude = ["models/**", "assets/**", "*.onnx"]
+
+
 [project]
 name = "rtmo-ort"
 version = "0.1.0"
