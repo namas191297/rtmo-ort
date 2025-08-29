@@ -1,9 +1,32 @@
-__pycache__/
-*.pyc
+# venv & env
 .venv/
 .env
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# Builds
 dist/
 build/
+*.egg-info/
+
+# Local artifacts
+assets/verify/
+assets/*.mp4
+out*.mp4
+vis*.jpg
+api_vis.jpg
+
+# Model blobs (host on GitHub Releases)
 *.onnx
 models/*
 !models/.gitkeep
+
+# Local release bundles (upload to Releases, not git)
+release_assets/
+
+tests/
+scripts/
