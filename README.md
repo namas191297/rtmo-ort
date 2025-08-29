@@ -99,7 +99,6 @@ export RTMO_MODELS_DIR=/abs/path/to/my_models
 **Image → annotated image**
 ```bash
 # Small COCO (17 kp), CPU
-RTMO_MODELS_DIR="$(pwd)/models" \
 rtmo-image --model-type small --dataset coco \
   --input assets/demo.jpg --output out.jpg --device cpu
 ```
@@ -107,7 +106,6 @@ rtmo-image --model-type small --dataset coco \
 **Video → annotated video**
 ```bash
 # Medium COCO, GPU if available
-RTMO_MODELS_DIR="$(pwd)/models" \
 rtmo-video --model-type medium --dataset coco \
   --input input.mp4 --output out.mp4 --device cuda
 ```
@@ -115,7 +113,6 @@ rtmo-video --model-type medium --dataset coco \
 **Webcam**
 ```bash
 # Tiny Body7 (coarse skeleton), default camera 0
-RTMO_MODELS_DIR="$(pwd)/models" \
 rtmo-webcam --model-type tiny --dataset body7 --device cpu --cam 0
 ```
 
