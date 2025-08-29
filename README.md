@@ -1,5 +1,7 @@
 # RTMO-ORT : RTMO via ONNXRuntime
 
+![rtmo-ort demo](assets/demo.gif)
+
 Lightweight **RTMO** pose estimation on **pure ONNX Runtime**.  
 Tiny Python class + simple CLIs: `rtmo-image`, `rtmo-video`, `rtmo-webcam`.
 
