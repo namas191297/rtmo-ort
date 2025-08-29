@@ -1,161 +1,157 @@
-# RTMO-ORT — RTMO pose on pure ONNX Runtime
+# rtmo-ort
 
-Minimal, fast RTMO (person detection + 2D pose) inference with **no heavy frameworks**. One tiny Python class, three simple CLIs, and ready-to-download ONNX models.
+Lightweight **RTMO** pose estimation on **pure ONNX Runtime**.  
+Tiny Python class + simple CLIs (`rtmo-image`, `rtmo-video`, `rtmo-webcam`).
 
-If this saves you time, please consider **starring the repo** — it really helps.
+> If this helps you, please star the repo — it really helps others discover it.
 
 ---
 
-## Install (two ways)
+## Install (pick ONE)
 
-### A) pip (recommended)
+### 1) pip (quickest)
 ```bash
+pip install -U pip
 # CPU
-pip install "rtmo-ort[cpu]"
-
-# GPU (uses onnxruntime-gpu if present)
-pip install "rtmo-ort[gpu]"
+pip install rtmo-ort[cpu]
+# or GPU (CUDA) wheels if available for your platform
+pip install rtmo-ort[gpu]
 ```
 
-### B) From source
+### 2) Clone + editable install (dev mode)
 ```bash
 git clone https://github.com/namas191297/rtmo-ort.git
 cd rtmo-ort
-python -m venv .venv && source .venv/bin/activate   # optional
-pip install -e ".[cpu]"                             # or ".[gpu]"
+
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -U pip
+pip install -e ".[cpu]"   # or ".[gpu]"
 ```
 
-Python ≥ 3.8. Works on Linux/macOS/Windows.
+### 3) Conda environment
+```bash
+conda create -n rtmo-ort python=3.9 -y
+conda activate rtmo-ort
+# inside this conda env, use pip to install the package
+pip install -U pip
+pip install rtmo-ort[cpu]   # or rtmo-ort[gpu]
+```
+
+> **Note:** The package does not ship model files. See “Get the models” below.
 
 ---
 
-## Get models
+## Get the models (required)
 
-This repo ships a helper to fetch ONNX files into `models/…`.
+You need the RTMO **.onnx** models on disk. The **recommended** way is to run the helper script which downloads and unzips the official assets into the expected layout.
 
+### Recommended (script)
+From the repo root (if you cloned the project):
 ```bash
-# fetch a specific release tag (e.g., v0.1.0)
-./get_models.sh v0.1.0
-
-# or omit to use the default in the script
 ./get_models.sh
 ```
+This creates a `models/` folder like:
+```
+models/
+  rtmo_s_640x640_coco/rtmo_s_640x640_coco.onnx
+  rtmo_s_640x640_crowdpose/rtmo_s_640x640_crowdpose.onnx
+  rtmo_s_640x640_body7/rtmo_s_640x640_body7.onnx
+  rtmo_m_640x640_coco/rtmo_m_640x640_coco.onnx
+  rtmo_m_640x640_body7/rtmo_m_640x640_body7.onnx
+  rtmo_l_640x640_coco/rtmo_l_640x640_coco.onnx
+  rtmo_l_640x640_crowdpose/rtmo_l_640x640_crowdpose.onnx
+  rtmo_l_640x640_body7/rtmo_l_640x640_body7.onnx
+  rtmo_t_416x416_body7/rtmo_t_416x416_body7.onnx
+```
 
-You can also download individual models manually (see table below).  
-By default, the CLIs look in `models/`. To change that, set `RTMO_MODELS_DIR=/path/to/models`.
+### Alternative (manual download)
+If you installed via **pip** and don’t have the repo’s `get_models.sh`, download the `.onnx` files from the GitHub **Releases** page and place them under `models/` using the layout above.  
+You can also point to a custom folder with the env var:
+```bash
+export RTMO_MODELS_DIR=/abs/path/to/my_models
+```
 
 ---
 
-## Models table (direct downloads)
+## Quickstart (CLI)
 
-Each file should be placed at `models/<name>/<name>.onnx`.  
-Example: `models/rtmo_s_640x640_coco/rtmo_s_640x640_coco.onnx`.
-
-> Replace `v0.1.0` with your chosen tag if needed.
-
-| Size   | Dataset         | Input | Download |
-|:------:|:----------------|:----:|:--|
-| tiny   | body7           | 416  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_t_416x416_body7.onnx |
-| small  | coco            | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_s_640x640_coco.onnx |
-| small  | crowdpose       | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_s_640x640_crowdpose.onnx |
-| small  | body7           | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_s_640x640_body7.onnx |
-| medium | coco            | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_m_640x640_coco.onnx |
-| medium | body7           | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_m_640x640_body7.onnx |
-| large  | coco            | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_l_640x640_coco.onnx |
-| large  | crowdpose       | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_l_640x640_crowdpose.onnx |
-| large  | body7           | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_l_640x640_body7.onnx |
-| large  | body7_crowdpose | 640  | https://github.com/namas191297/rtmo-ort/releases/download/v0.1.0/rtmo_l_640x640_body7_crowdpose.onnx |
-
----
-
-## Use the CLIs
-
-All commands accept the same presets and thresholds:
-
-- `--model-type {tiny,small,medium,large}` (default: `small`)
-- `--dataset {coco,crowdpose,body7,body7_crowdpose}` (default: `coco`)
-- `--no-letterbox` (disable square letterbox; default is letterbox on)
-- `--score-thr`, `--kpt-thr`, `--max-det`
-- `--device {cpu,cuda}`
-- `--onnx /path/to/model.onnx` (overrides presets)
-- `--models-dir /path/to/models` (default: `models`)
-
-### Image
+**Image → annotated image**
 ```bash
-rtmo-image --model-type small --dataset coco \
-  --input path/to/in.jpg --output out.jpg --device cpu
+# Small COCO (17 kp), CPU
+RTMO_MODELS_DIR="$(pwd)/models" rtmo-image --model-type small --dataset coco   --input assets/demo.jpg --output out.jpg --device cpu
 ```
 
-### Video
+**Video → annotated video**
 ```bash
-rtmo-video --model-type small --dataset coco \
-  --input in.mp4 --output out.mp4 --device cuda
+# Medium COCO, GPU if available
+RTMO_MODELS_DIR="$(pwd)/models" rtmo-video --model-type medium --dataset coco   --input input.mp4 --output out.mp4 --device cuda
 ```
 
-### Webcam
+**Webcam**
 ```bash
-rtmo-webcam --model-type small --dataset coco --device cpu
-# pick another camera:
-# rtmo-webcam --cam 1
+# Tiny Body7 (coarse skeleton), default camera 0
+RTMO_MODELS_DIR="$(pwd)/models" rtmo-webcam --model-type tiny --dataset body7 --device cpu --cam 0
 ```
+
+### Useful flags
+- `--no-letterbox` : disable letterboxing (use simple resize)
+- `--score-thr`, `--kpt-thr`, `--max-det` : tweak detection & keypoint thresholds
+- `--size` : override input size (defaults: tiny=416, small/medium/large=640)
+- `--onnx` : bypass presets and point directly to a specific .onnx file
+
+**Preset matrix** (what `--model-type` + `--dataset` map to):
+| model-type | dataset      | default size | expected K (keypoints) |
+|------------|--------------|--------------|-------------------------|
+| tiny       | body7        | 416          | 17 (exported)           |
+| small      | coco         | 640          | 17                      |
+| small      | crowdpose    | 640          | 14                      |
+| small      | body7        | 640          | 17 (exported)           |
+| medium     | coco/body7   | 640          | 17                      |
+| large      | coco/body7   | 640          | 17                      |
+
+> **CrowdPose** uses 14 keypoints (we connect `top_head` + neck + limbs).  
+> **COCO** uses 17 keypoints.  
+> **Body7** exports here contain 17 keypoints (coarser subset is represented).
 
 ---
 
 ## Python API
-
 ```python
 import cv2
 from rtmo_ort import PoseEstimatorORT
 
 onnx = "models/rtmo_s_640x640_coco/rtmo_s_640x640_coco.onnx"
-pe = PoseEstimatorORT(onnx, device="cpu", letterbox=True)
+pe = PoseEstimatorORT(onnx, device="cpu", letterbox=True, score_thr=0.25, kpt_thr=0.2)
 
 img = cv2.imread("assets/demo.jpg")
-boxes, kpts, scores = pe.infer(img)
+boxes, kpts, scores = pe.infer(img)   # boxes[N,4], kpts[N,K,3], scores[N]
 
 vis = pe.annotate(img, boxes, kpts, scores)
 cv2.imwrite("vis.jpg", vis)
-```
-
-**Outputs**
-- `boxes`: `[N,4]` in xyxy
-- `kpts`: `[N,K,3]` with `(x,y,score)` per keypoint
-- `scores`: `[N]` person scores
-
----
-
-## Notes and tips
-
-- **NMS is fused** inside the ONNX models. Do not run NMS again.
-- **Letterbox vs. stretch.** Letterbox (default) preserves aspect ratio and generally matches training; stretching (`--no-letterbox`) may reduce accuracy but can be fine for quick demos.
-- **Keypoints count.** COCO = 17; CrowdPose = 14; Body7 is coarse. Some Body7 exports use 17-dim outputs for compatibility; semantics remain coarse.
-- **GPU provider.** If you installed `onnxruntime-gpu`, use `--device cuda`. If CUDA isn’t found, ONNX Runtime falls back to CPU.
-- **Codecs.** If `rtmo-video` fails to write a file, try `mp4v`, `XVID`, or install OS-level codecs.
-
----
-
-## Project structure
-
-```
-rtmo_ort/
-  ├─ estimator.py   # PoseEstimatorORT (ONNX Runtime + postprocess + drawing)
-  ├─ cli.py         # rtmo-image / rtmo-video / rtmo-webcam
-  └─ __init__.py
-models/             # place ONNX files here (or use --onnx)
-get_models.sh       # fetches model files for a given tag
+print(f"saved vis.jpg — persons: {len(boxes)}")
 ```
 
 ---
 
-If you want something specific, open an issue.
+## Troubleshooting
+- **No detections** on your image/video? Try lowering thresholds:
+  ```bash
+  --score-thr 0.05 --kpt-thr 0.05
+  ```
+- **Webcam issues**: pass `--cam 1` (or another index), add `--window` to name the window.
+- **OpenCV can’t open display** on some Linux servers: you may need `sudo apt-get install -y libgl1` or use headless runs and save to disk.
+- **GPU not used**: check printed ONNX Runtime providers. If you only see `CPUExecutionProvider`, install the GPU wheel (`pip install onnxruntime-gpu`) and ensure CUDA/cuDNN are available.
 
 ---
 
-## Contributing & support
+## Notes
+- ONNX Runtime version is not pinned; use the latest stable wheel for best performance/compatibility.
+- Letterboxing is optional; most RTMO exports assume external resize. The `--no-letterbox` flag is provided for quick experimentation.
+- You can store models anywhere and set `RTMO_MODELS_DIR` to point to that folder.
 
-Issues and pull requests are welcome. If you found this useful, **star the repo** and consider sharing a short demo clip — it helps others discover it.
+---
 
-- Website: namasbhandari.in
-- Repo: https://github.com/namas191297/rtmo-ort  
-- Issues: https://github.com/namas191297/rtmo-ort/issues  
-- License: Apache-2.0
+## License
+Apache-2.0. See [LICENSE](LICENSE).
+
+If you find this useful, consider ⭐ starring the repo and sharing it with a friend.
