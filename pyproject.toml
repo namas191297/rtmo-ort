@@ -9,20 +9,13 @@ exclude = ["models/**", "assets/**", "*.onnx"]
 
 [project]
 name = "rtmo-ort"
-version = "0.1.0"
+version = "0.1.0post1"
 description = "RTMO pose estimation with pure ONNX Runtime (tiny class + CLI)."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
-authors = [{ name = "Your Name" }]
+authors = [{ name = "Namas" }]
 keywords = ["RTMO", "pose", "mmpose", "onnxruntime", "keypoints", "realtime"]
-classifiers = [
-  "License :: OSI Approved :: Apache Software License",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Operating System :: OS Independent",
-  "Topic :: Scientific/Engineering :: Artificial Intelligence",
-]
 
 dependencies = [
   "numpy",
